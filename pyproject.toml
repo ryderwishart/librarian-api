@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "librarian-api"
+name = "librarian_api"
 version = "0.1.0"
 description = ""
 authors = ["ryderwishart <ryderwishart@gmail.com>"]
