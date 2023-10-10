@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "librarian_api"}]
 
 [tool.poetry.dependencies]
-python = "3.11"
+python = "^3.11"
 lancedb = "^0.3.0"
 pandas = "^2.1.1"
 modal = "^0.54.3778"
