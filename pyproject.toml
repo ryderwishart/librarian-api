@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "librarian-api"
+version = "0.1.0"
+description = ""
+authors = ["ryderwishart <ryderwishart@gmail.com>"]
+readme = "README.md"
+packages = [{include = "librarian_api"}]
+
+[tool.poetry.dependencies]
+python = "3.11"
+lancedb = "^0.3.0"
+pandas = "^2.1.1"
+modal = "^0.54.3778"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
