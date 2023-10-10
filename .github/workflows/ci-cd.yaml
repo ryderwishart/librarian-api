@@ -40,4 +40,4 @@ jobs:
 
       - name: Deploy job
         run: |
-          modal deploy db.py
+          modal deploy librarian-api/db.py
