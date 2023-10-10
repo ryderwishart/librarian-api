@@ -24,15 +24,13 @@ image = (
         "lancedb",
         "poetry"
     )
-    .apt_install("git")
+    .apt_install("git", "wget")
     .run_commands(
         "mkdir data",
         "mkdir data/macula",
         "git clone https://github.com/Clear-Bible/genesis-ai-datasets.git",
-        "wget https://github.com/Clear-Bible/macula-hebrew/raw/main/TSV/macula-hebrew.tsv -O data/sources/macula-hebrew.tsv",
-        "wget https://github.com/Clear-Bible/macula-greek/raw/main/SBLGNT/tsv/macula-greek-SBLGNT.tsv -O data/sources/macula-greek-SBLGNT.tsv",
-        "mv macula-hebrew.tsv data/macula/macula-hebrew.tsv",
-        "mv macula-greek-SBLGNT.tsv data/macula/macula-greek-SBLGNT.tsv",
+        "wget https://github.com/Clear-Bible/macula-hebrew/raw/main/TSV/macula-hebrew.tsv -O data/macula/macula-hebrew.tsv",
+        "wget https://github.com/Clear-Bible/macula-greek/raw/main/SBLGNT/tsv/macula-greek-SBLGNT.tsv -O data/macula/macula-greek-SBLGNT.tsv",
     )
 )
 
