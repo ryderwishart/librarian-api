@@ -22,6 +22,7 @@ image = (
     Image.debian_slim(python_version="3.11")
     .pip_install(
         "lancedb",
+        "poetry"
     )
     .apt_install("git")
     .run_commands(
