@@ -131,11 +131,12 @@ def embed_batch(batch):
 
 # The following two lines will embed your text columns
 
-# text_df['vector'] = text_df['text'].apply(embed_batch)
+# text_df['vector'] = text_df['text'].apply(embed_batch) # FIXME: use lancedb's with_embeddings method to properly batch this
 # alignment_df['vector'] = alignment_df['text'].apply(embed_batch)
 
 # stringify the alignments data as it is structured, and this is not compatible with lancedb
 alignment_df['alignment'] = alignment_df['alignment'].apply(json.dumps)
+alignment_df['alignments'] = alignment_df['alignments'].apply(json.dumps) # FIXME: we should only have 'alignments' - fix upstream
 
 # stringify the macula_token_ids data as it is structured, and this is not compatible with lancedb
 alignment_df['macula_token_ids'] = alignment_df['macula_token_ids'].apply(json.dumps)
@@ -150,3 +151,5 @@ alignment_tables = db.create_table("alignments", alignment_df, mode='overwrite')
 @web_endpoint(method="GET")
 def hello_world():
     return {"message": "Hello World", "macula data": os.listdir(DATA_DIR), 'genesis data': os.listdir(DATA_DIR), 'dfs and columns': {'text_df': text_df.columns, 'alignment_df': alignment_df.columns, 'macula_df': macula_df.columns}}
+
+hello_world.local()
