@@ -13,38 +13,36 @@ from modal import (
     method,
     web_endpoint,
 )
-
 web_app = FastAPI()
 assets_path = Path(__file__).parent / "genesis-ai-datasets"
-
 
 image = (
     Image.debian_slim(python_version="3.11")
     .pip_install(
         "lancedb",
         "poetry",
-        "pandas"
+        "pandas",
+        "sentence_transformers",
     )
     .apt_install("git", "wget")
-    .run_commands(
-        "mkdir data",
-        "cd data",
-        "mkdir macula",
-        "git clone https://github.com/Clear-Bible/genesis-ai-datasets.git",
-        "wget https://github.com/Clear-Bible/macula-hebrew/raw/main/TSV/macula-hebrew.tsv",
-        "wget https://github.com/Clear-Bible/macula-greek/raw/main/SBLGNT/tsv/macula-greek-SBLGNT.tsv",
-        "mv macula-hebrew.tsv macula/macula-hebrew.tsv",
-        "mv macula-greek-SBLGNT.tsv macula/macula-greek-SBLGNT.tsv",
-        "cd .."
-    )
 )
 import os
-# os.chdir("librarian_api")
 print('current dir', os.listdir(Path.cwd()))
-
 
 stub = Stub(name="genesis", image=image)
 DATA_DIR = Path("./data")
+
+if not DATA_DIR.exists():
+    os.makedirs(DATA_DIR)
+    os.chdir(DATA_DIR)
+    os.makedirs("macula")
+    os.system("git clone https://github.com/Clear-Bible/genesis-ai-datasets.git")
+    os.system("wget https://github.com/Clear-Bible/macula-hebrew/raw/main/TSV/macula-hebrew.tsv")
+    os.system("wget https://github.com/Clear-Bible/macula-greek/raw/main/SBLGNT/tsv/macula-greek-SBLGNT.tsv")
+    os.rename("macula-hebrew.tsv", "macula/macula-hebrew.tsv")
+    os.rename("macula-greek-SBLGNT.tsv", "macula/macula-greek-SBLGNT.tsv")
+    os.chdir("..")
+
 print('data:', DATA_DIR, os.listdir(DATA_DIR))
 volume = Volume.persisted("genesis-volume")
 stub.volume = volume
@@ -135,8 +133,7 @@ def embed_batch(batch):
 # alignment_df['vector'] = alignment_df['text'].apply(embed_batch)
 
 # stringify the alignments data as it is structured, and this is not compatible with lancedb
-alignment_df['alignment'] = alignment_df['alignment'].apply(json.dumps)
-alignment_df['alignments'] = alignment_df['alignments'].apply(json.dumps) # FIXME: we should only have 'alignments' - fix upstream
+alignment_df['alignments'] = alignment_df['alignments'].apply(json.dumps)
 
 # stringify the macula_token_ids data as it is structured, and this is not compatible with lancedb
 alignment_df['macula_token_ids'] = alignment_df['macula_token_ids'].apply(json.dumps)
