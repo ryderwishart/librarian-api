@@ -1,3 +1,9 @@
 __pycache__
 
 lancedb
+/clickhouse
+/metadata
+/preprocessed_configs
+/status
+/user_files
+/uuid
