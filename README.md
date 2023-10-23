@@ -50,7 +50,7 @@ user_files/
 │   └── UBS-images-metadata.tsv_updated.tsv.zip
 └── macula
     ├── macula-with-marble-ids.tsv
-    └── macula-with-marble-ids.tsv.zip
+    └── macula-with-marble-ids.tsv.zip  [NOTE: this file currently has a double header to force ClickHouse to read all columns as strings]
 ```
 
 Data can be queried directly from files by using the `file()` function. For example:
