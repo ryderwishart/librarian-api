@@ -39,7 +39,7 @@ def query_clickhouse():
     column_names = client.execute(column_name_query)[0]
     
     # Map the column names to `c1`, `c2`, etc. using a dict where the passed `column_name` is the key
-    column_name_dict = {column_name: f'c{index}' for index, column_name in enumerate(column_names)}
+    column_name_dict = {column_name: f'c{index + 1}' for index, column_name in enumerate(column_names)}
 
     try:
         # Prepare the query
