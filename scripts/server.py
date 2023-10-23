@@ -23,6 +23,7 @@ def query_clickhouse():
     table = request.args.get('file')
     search_string = request.args.get('search_string', '')
     column_name = request.args.get('column', '')
+    limit = request.args.get('limit', 5)
 
     # Sanitize input
     search_string = sanitize_input(search_string)
@@ -50,7 +51,7 @@ def query_clickhouse():
             query += f" WHERE {col_key} = '{search_string}'"
 
         # Add a LIMIT clause to limit the results to 50
-        query += " LIMIT 50"
+        query += f" LIMIT {limit}"
 
         # Execute the query
         result = client.execute(query)
