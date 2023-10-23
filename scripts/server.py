@@ -31,6 +31,14 @@ def query_clickhouse():
     # Validate the table
     if table not in available_files:
         return jsonify({"error": "File not found", "available_files": available_files})
+    
+    # To get the true column names, query the first result limit 1, then return values, and use these to map to `c1`, `c2`, etc.
+    # This is a hacky way to get the column names, but it works for now
+    column_name_query = f"SELECT * FROM file('{sandbox_path}{table}') LIMIT 1"
+    column_names = client.execute(column_name_query)[0]
+    
+    # Map the column names to `c1`, `c2`, etc. using a dict where the passed `column_name` is the key
+    column_name_dict = {column_name: f'c{index}' for index, column_name in enumerate(column_names)}
 
     try:
         # Prepare the query
@@ -38,7 +46,8 @@ def query_clickhouse():
 
         # Add a WHERE clause if a search_string and column_name are provided
         if search_string and column_name:
-            query += f" WHERE {column_name} = '{search_string}'"
+            col_key = column_name_dict[column_name]
+            query += f" WHERE {col_key} = '{search_string}'"
 
         # Add a LIMIT clause to limit the results to 50
         query += " LIMIT 50"
