@@ -22,7 +22,7 @@ available_files = list(list_files(sandbox_path, valid_extensions))
 def query_clickhouse():
     table = request.args.get('file')
     search_string = request.args.get('search_string', '')
-    column_name = request.args.get('column', '')
+    column_name = request.args.get('column_name', '')
     limit = request.args.get('limit', 5)
 
     # Sanitize input
