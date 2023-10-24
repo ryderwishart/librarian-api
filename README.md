@@ -65,6 +65,15 @@ Data can be queried directly from files by using the `file()` function. For exam
 SELECT * FROM file('user_files/alignments/spanish/spapddpt_alignments_final_output_updated.jsonl')
 ```
 
+## Cleaning up the HOTTP data for clickhouse
+
+We're just turning out json data into TSV by extracting a primary key and making it field 1.
+
+```bash
+cd user_files/hottp
+# The transform script should be right in the HOTTP folder
+python3 make_tsv_from_hottp_json.py
+```
 
 ## Running the flask server
 
@@ -82,7 +91,7 @@ Install Flask, clickhouse-driver, and gunicorn:
 
 `pip install gunicorn`
 
-`gunicorn -w 4 -b 0.0.0.0:5000 server:app` or 
+`gunicorn -w 4 -b 0.0.0.0:5000 server:app` (don't need this script anymore) or 
 `gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
 
 Using postman, test the API endpoint by querying:

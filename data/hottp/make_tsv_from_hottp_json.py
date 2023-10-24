@@ -8,6 +8,10 @@ def process_json_file(json_file):
     filename = json_file.split('.')[0]
 
     output_file = f'{filename}.tsv'
+    
+    # if output file exists, write over it
+    if os.path.exists(output_file):
+        os.remove(output_file)
 
     for entry in data['HOTTP_Entries']['HOTTP_Entry']:
         refs = entry['References']['Reference']
