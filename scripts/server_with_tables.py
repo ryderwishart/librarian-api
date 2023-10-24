@@ -82,6 +82,7 @@ def query_macula():
 
 def initialize_clickhouse():
     client.execute('DROP TABLE IF EXISTS macula')
+    client.execute('DROP TABLE IF EXISTS alignments') # Won't be needed once there is one table for each language
     
     # Create the table
     try:
@@ -93,21 +94,6 @@ def initialize_clickhouse():
         client.execute(create_table_query)
     except Exception as e:
         print(f"Could not create table: {e}")
-        
-    try: 
-        create_table_query = f"""
-        CREATE TABLE IF NOT EXISTS alignments (
-            vref String,
-            json_data String
-        ) ENGINE = MergeTree()
-        ORDER BY vref
-        SETTINGS allow_nullable_key = 1;
-        """
-        print('Creating alignments table')
-        client.execute(create_table_query)
-    except Exception as e:
-        print(f"Could not create table: {e}")
-
     # Insert data from TSV file
     try:
         insert_data_query = f"""
@@ -124,10 +110,29 @@ def initialize_clickhouse():
     all_jsonl_files = [f for f in available_files if f.endswith('.jsonl')]
     print(f"Found {len(all_jsonl_files)} JSONL files", all_jsonl_files)
     
-    for jsonl_file in all_jsonl_files:
+    for jsonl_file in all_jsonl_files:        
+        language = jsonl_file.split('/')[1]
+        table_name = f'{language}_alignment'
+        client.execute(f'DROP TABLE IF EXISTS {table_name}')
+
+        try: 
+            create_table_query = f"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                vref String,
+                json_data String
+            ) ENGINE = MergeTree()
+            ORDER BY vref
+            SETTINGS allow_nullable_key = 1;
+            """
+            print('Creating alignments table')
+            client.execute(create_table_query)
+        except Exception as e:
+            print(f"Could not create table: {e}")
+
+        
         try:
             insert_data_query = f"""
-            INSERT INTO alignments
+            INSERT INTO {table_name}
             SELECT *
             FROM file('{jsonl_file}', 'TSV', 'vref String, json_data String');
             """

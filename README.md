@@ -9,11 +9,17 @@ Gather data:
 
 Unzip all compressed datasets:
 
+```bash
+sudo apt-get update
+sudo apt-get install unzip
+```
+
 `find . -name '*.zip' -exec sh -c 'unzip -d "$(dirname "$1")" "$1"' _ {} \;`
+`find . -name '__MACOSX' -exec rm -rf {} + 2>/dev/null`
 
 Move all files to clickhouse user_files (might need to start server at least once before you do this?)
 
-`mv ./data/* ./user_files/`
+`mv ./data/* ../user_files/`
 
 Start Clickhouse server and client
 
@@ -62,52 +68,22 @@ SELECT * FROM file('user_files/alignments/spanish/spapddpt_alignments_final_outp
 
 ## Running the flask server
 
-If `server.py` doesn't exist:
-
-`touch server.py`
-
-`nano server.py`
-
-```python
-from flask import Flask, request, jsonify
-from clickhouse_driver import Client
-
-app = Flask(__name__)
-
-# Initialize ClickHouse client
-client = Client('localhost')
-
-@app.route('/query', methods=['GET'])
-def query_clickhouse():
-    table = request.args.get('file')
-    
-    # Sanitize and validate the table variable
-    # ...
-
-    query = f'SELECT * FROM file({table})'
-    result = client.execute(query)
-    
-    return jsonify({'result': result})
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)  # Make it accessible from outside the droplet
-```
-
-Next, install Flask, clickhouse-driver, and gunicorn:
+Install Flask, clickhouse-driver, and gunicorn:
 
 `apt install python3-pip`
 
 `sudo apt-get install python3-venv`
 
-`python3 -m venv librarian_env`
+`python3 -m venv api_venv`
 
-`source librarian_env/bin/activate`
+`source api_venv/bin/activate`
 
 `pip install Flask clickhouse-driver`
 
 `pip install gunicorn`
 
-`gunicorn -w 4 -b 0.0.0.0:5000 server:app`
+`gunicorn -w 4 -b 0.0.0.0:5000 server:app` or 
+`gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
 
 Using postman, test the API endpoint by querying:
 
