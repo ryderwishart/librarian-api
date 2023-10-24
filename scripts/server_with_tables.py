@@ -131,8 +131,6 @@ def query_macula():
         return jsonify({'error': str(e)})
 
 def initialize_clickhouse():
-    client.execute('DROP TABLE IF EXISTS macula')
-    client.execute('DROP TABLE IF EXISTS alignments') # Won't be needed once there is one table for each translation
     
     # Create the table
     try:
@@ -190,6 +188,39 @@ def initialize_clickhouse():
             client.execute(insert_data_query)
         except Exception as e:
             print(f"Could not insert data from JSONL files: {e}")
+            
+    all_hottp_tsv_files = [f for f in available_files if 'hottp' in f and f.endswith('.tsv')]
+    print(f"Found {len(all_hottp_tsv_files)} HOTTP TSV files", all_hottp_tsv_files)
+    
+    for hottp_tsv_file in all_hottp_tsv_files:
+        translation = hottp_tsv_file.split('_')[2].split('.')[0]
+        table_name = f'{translation}_alignment'
+        client.execute(f'DROP TABLE IF EXISTS {table_name}')
+
+        try: 
+            create_table_query = f"""
+            CREATE TABLE IF NOT EXISTS hottp_{table_name} (
+                refArray Array(String),
+                json_data String
+            ) ENGINE = MergeTree()
+            ORDER BY refArray;
+            """
+            print('Creating alignments table')
+            client.execute(create_table_query)
+        except Exception as e:
+            print(f"Could not create table: {e}")
+
+        
+        try:
+            insert_data_query = f"""
+            INSERT INTO hottp_{table_name}
+            SELECT *
+            FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data String');
+            """
+            print('Inserting data from HOTTP TSV files')
+            client.execute(insert_data_query)
+        except Exception as e:
+            print(f"Could not insert data from HOTTP TSV files: {e}")
 
     # # Create the index (assuming you want to create an index on column1)
     # try:
@@ -212,7 +243,7 @@ def initialize_clickhouse():
 def query_alignments():
     vref = request.args.get('vref', '')
     limit = request.args.get('limit', 5)
-    translation = request.args.get('translation', 'spanish')
+    translation = request.args.get('nllb_language_code', 'spa_Latn') # TODO: add some helpful error handling here. Need to use flores NLLB codes
     
     try:
         # Prepare the query
@@ -231,7 +262,7 @@ def query_alignments():
         return jsonify({'result': result, "request": {"vref": vref, "limit": limit}})
     except Exception as e:
         return jsonify({'error': str(e)})
-   
+
 # endpoint to get 1 chapter worth of alignments and macula rows 
 @app.route('/chapter', methods=['GET'])
 def query_chapter():
@@ -264,6 +295,33 @@ def query_chapter():
 
         # Return both results
         return jsonify({'alignments': result_alignments, 'macula': result_macula, 'macula_column_names': macula_column_names})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+# endpoint to get hottp data when a given ref is in the refArray
+@app.route('/hottp', methods=['GET'])
+def query_hottp():
+    marbleRef = request.args.get('marbleRef', '')
+    # limit = request.args.get('limit', 5)
+    translation = request.args.get('translation', 'spa_Latn')
+    try:
+        # Prepare the query
+        table_name = f'hottp_{translation}'
+        query = f"SELECT * FROM {table_name}"
+
+        # Add a WHERE clause if a marbleRef
+        if not marbleRef:
+            return jsonify({'error': 'Please provide a marbleRef arg (i.e., a UBS Marble project ID)'})
+    
+        query += f" WHERE arrayExists(x -> x = '{marbleRef}', refArray)"
+
+        # Add a LIMIT clause to limit the results
+        # query += f" LIMIT {limit}"
+
+        # Execute the query
+        result = client.execute(query)
+        return jsonify(result)
+    
     except Exception as e:
         return jsonify({'error': str(e)})
 
