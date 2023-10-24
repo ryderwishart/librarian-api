@@ -82,7 +82,7 @@ def query_macula():
 
 def initialize_clickhouse():
     client.execute('DROP TABLE IF EXISTS macula')
-    client.execute('DROP TABLE IF EXISTS alignments') # Won't be needed once there is one table for each language
+    client.execute('DROP TABLE IF EXISTS alignments') # Won't be needed once there is one table for each translation
     
     # Create the table
     try:
@@ -111,8 +111,8 @@ def initialize_clickhouse():
     print(f"Found {len(all_jsonl_files)} JSONL files", all_jsonl_files)
     
     for jsonl_file in all_jsonl_files:        
-        language = jsonl_file.split('/')[1]
-        table_name = f'{language}_alignment'
+        translation = jsonl_file.split('/')[1]
+        table_name = f'{translation}_alignment'
         client.execute(f'DROP TABLE IF EXISTS {table_name}')
 
         try: 
@@ -162,11 +162,11 @@ def initialize_clickhouse():
 def query_alignments():
     vref = request.args.get('vref', '')
     limit = request.args.get('limit', 5)
-    language = request.args.get('language', 'spanish')
+    translation = request.args.get('translation', 'spanish')
     
     try:
         # Prepare the query
-        table_name = f'{language}_alignment'
+        table_name = f'{translation}_alignment'
         query = f"SELECT * FROM {table_name}"
 
         # Add a WHERE clause if a search_string and column_name are provided
@@ -187,20 +187,31 @@ def query_alignments():
 def query_chapter():
     book = request.args.get('book', '') # e.g., GEN, ROM, 
     chapter = request.args.get('chapter', '') 
-    verse = request.args.get('verse', '')
-    language = request.args.get('language', 'spanish')
+    translation = request.args.get('translation', 'spanish')
     
     try:
-        # Prepare the query
-        table_name = f'{language}_alignment'
-        query = f"""
-        SELECT * FROM {table_name}
-        WHERE VREF LIKE '{book} {chapter}:%'
+        # Prepare the query for alignments
+        table_name_alignments = f'{translation}_alignment'
+        query_alignments = f"""
+        SELECT * FROM {table_name_alignments}
+        WHERE vref LIKE '{book} {chapter}:%'
         """
 
-        # Execute the query
-        result = client.execute(query)
-        return jsonify(result)
+        # Execute the query for alignments
+        result_alignments = client.execute(query_alignments)
+
+        # Prepare the query for macula
+        table_name_macula = 'macula'
+        query_macula = f"""
+        SELECT * FROM {table_name_macula}
+        WHERE vref LIKE '{book} {chapter}:%'
+        """
+
+        # Execute the query for macula
+        result_macula = client.execute(query_macula)
+
+        # Return both results
+        return jsonify({'alignments': result_alignments, 'macula': result_macula})
     except Exception as e:
         return jsonify({'error': str(e)})
 
