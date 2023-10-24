@@ -162,10 +162,12 @@ def initialize_clickhouse():
 def query_alignments():
     vref = request.args.get('vref', '')
     limit = request.args.get('limit', 5)
+    language = request.args.get('language', 'spanish')
     
     try:
         # Prepare the query
-        query = "SELECT * FROM alignments"
+        table_name = f'{language}_alignment'
+        query = f"SELECT * FROM {table_name}"
 
         # Add a WHERE clause if a search_string and column_name are provided
         if vref:
