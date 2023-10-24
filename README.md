@@ -128,3 +128,9 @@ Examples:
 ```bash
 find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i.bak -e 's/{"vref": "\([^"]*\)".*/\1\t&/' {}
 ```
+
+With limited file space you can skip the backup file (since you can always restore from the original zip file):
+
+```bash
+find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i -e 's/{"vref": "\([^"]*\)".*/\1\t&/' {}
+```

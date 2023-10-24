@@ -17,13 +17,26 @@ def rename_ambiguous_keys(obj, parent_key=''):
 
     return obj
 
-def process_jsonl_file(input_filename, output_filename):
-    with open(input_filename, 'r') as infile, open(output_filename, 'w') as outfile:
-        # Read and process each line
-        updated_lines = [rename_ambiguous_keys(json.loads(line)) for line in infile]
-        # Write updated data to the output file
-        for updated_obj in updated_lines:
-            outfile.write(json.dumps(updated_obj) + '\n')
+def process_file(input_filename, output_filename):
+    # Check if the file is a .json or .jsonl file
+    if input_filename.endswith('.json'):
+        with open(input_filename, 'r') as infile, open(output_filename, 'w') as outfile:
+            # Load the entire JSON file
+            data = json.load(infile)
+            # Rename ambiguous keys
+            updated_data = rename_ambiguous_keys(data)
+            # Write updated data to the output file
+            outfile.write(json.dumps(updated_data, ensure_ascii=False))
+    elif input_filename.endswith('.jsonl'):
+        with open(input_filename, 'r') as infile, open(output_filename, 'w') as outfile:
+            # Read and process each line
+            updated_lines = [rename_ambiguous_keys(json.loads(line)) for line in infile]
+            # Write updated data to the output file
+            for updated_obj in updated_lines:
+                outfile.write(json.dumps(updated_obj, ensure_ascii=False) + '\n')
+    else:
+        print("Unsupported file type. Please provide a .json or .jsonl file.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -32,4 +45,4 @@ if __name__ == "__main__":
     
     input_filename = sys.argv[1]
     output_filename = sys.argv[2]
-    process_jsonl_file(input_filename, output_filename)
+    process_file(input_filename, output_filename)
