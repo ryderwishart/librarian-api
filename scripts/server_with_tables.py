@@ -193,7 +193,8 @@ def initialize_clickhouse():
     print(f"Found {len(all_hottp_tsv_files)} HOTTP TSV files", all_hottp_tsv_files)
     
     for hottp_tsv_file in all_hottp_tsv_files:
-        translation = hottp_tsv_file.split('_')[2].split('.')[0]
+        # hottp/HOTTP_translated_spa_Latn.tsv --> spa_Latn
+        translation = hottp_tsv_file.split('/')[1].split('_')[-1].split('.')[0]
         table_name = f'{translation}_alignment'
         client.execute(f'DROP TABLE IF EXISTS {table_name}')
 
