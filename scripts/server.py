@@ -35,18 +35,7 @@ def query_clickhouse():
     
     # To get the true column names, query the first result limit 1, then return values, and use these to map to `c1`, `c2`, etc.
     # This is a hacky way to get the column names, but it works for now
-    column_name_string = '''xml:id Nullable(String), ref Nullable(String), class Nullable(String), \
-text Nullable(String), transliteration Nullable(String), after Nullable(String), strongnumberx Nullable(String), \
-stronglemma Nullable(String), sensenumber Nullable(String), greek Nullable(String), greekstrong Nullable(String), \
-gloss Nullable(String), english Nullable(String), mandarin Nullable(String), stem Nullable(String), \
-morph Nullable(String), lang Nullable(String), lemma Nullable(String), pos Nullable(String), person Nullable(String), \
-gender Nullable(String), number Nullable(String), state Nullable(String), type Nullable(String), \
-lexdomain Nullable(String), contextualdomain Nullable(String), coredomain Nullable(String), sdbh Nullable(String), \
-extends Nullable(String), frame Nullable(String), subjref Nullable(String), participantref Nullable(String), \
-role Nullable(String), normalized Nullable(String), strong Nullable(String), case Nullable(String), \
-tense Nullable(String), voice Nullable(String), mood Nullable(String), degree Nullable(String), domain Nullable(String), \
-ln Nullable(String), referent Nullable(String), vref Nullable(String), VREF Nullable(String), \
-TEXT Nullable(String), marble_ids Nullable(String)'''
+    column_name_string = '''xmlid Nullable(String), ref Nullable(String), class Nullable(String), text Nullable(String), transliteration Nullable(String), after Nullable(String), strongnumberx Nullable(String), stronglemma Nullable(String), sensenumber Nullable(String), greek Nullable(String), greekstrong Nullable(String), gloss Nullable(String), english Nullable(String), mandarin Nullable(String), stem Nullable(String), morph Nullable(String), lang Nullable(String), lemma Nullable(String), pos Nullable(String), person Nullable(String), gender Nullable(String), number Nullable(String), state Nullable(String), type Nullable(String), lexdomain Nullable(String), contextualdomain Nullable(String), coredomain Nullable(String), sdbh Nullable(String), extends Nullable(String), frame Nullable(String), subjref Nullable(String), participantref Nullable(String), role Nullable(String), normalized Nullable(String), strong Nullable(String), case Nullable(String), tense Nullable(String), voice Nullable(String), mood Nullable(String), degree Nullable(String), domain Nullable(String), ln Nullable(String), referent Nullable(String), vref Nullable(String), VREF Nullable(String), TEXT Nullable(String), marble_ids Nullable(String)'''
     
     try:
         # Prepare the query
