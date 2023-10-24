@@ -7,3 +7,6 @@ lancedb
 /status
 /user_files
 /uuid
+store
+metadata_dropped
+data/default
