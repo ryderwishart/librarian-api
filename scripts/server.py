@@ -50,7 +50,7 @@ TEXT Nullable(String), marble_ids Nullable(String)'''
     
     try:
         # Prepare the query
-        query = f"SELECT * FROM file('{sandbox_path}{table}', 'TSV', {column_name_string})"
+        query = f"SELECT * FROM file('{sandbox_path}{table}', 'TSV', '{column_name_string}')"
 
         # Add a WHERE clause if a search_string and column_name are provided
         if search_string and column_name:
