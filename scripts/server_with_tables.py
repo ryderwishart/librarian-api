@@ -181,7 +181,28 @@ def query_alignments():
         return jsonify({'result': result, "request": {"vref": vref, "limit": limit}})
     except Exception as e:
         return jsonify({'error': str(e)})
+   
+# endpoint to get 1 chapter worth of alignments and macula rows 
+@app.route('/chapter', methods=['GET'])
+def query_chapter():
+    book = request.args.get('book', '') # e.g., GEN, ROM, 
+    chapter = request.args.get('chapter', '') 
+    verse = request.args.get('verse', '')
+    language = request.args.get('language', 'spanish')
     
+    try:
+        # Prepare the query
+        table_name = f'{language}_alignment'
+        query = f"""
+        SELECT * FROM {table_name}
+        WHERE VREF LIKE '{book} {chapter}:%'
+        """
+
+        # Execute the query
+        result = client.execute(query)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 initialize_clickhouse()  # Initialize ClickHouse
 
