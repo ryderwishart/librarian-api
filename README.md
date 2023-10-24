@@ -118,3 +118,13 @@ Using postman, test the API endpoint by querying:
     "file": "macula/macula-with-marble-ids.tsv"
 }
 ```
+
+Examples:
+`http://{DROPLET_IP_ADDRESS}:5000/query?file=macula/macula-with-marble-ids.tsv&search_string=ROM 1:9&column_name=VREF&limit=3`
+`http://{DROPLET_IP_ADDRESS}:5000/alignments?vref=ROM 5:6&limit=5`
+
+## Format alignment JSONL files for ClickHouse
+
+```bash
+find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i.bak -e 's/{"vref": "\([^"]*\)".*/\1\t&/' {}
+```
