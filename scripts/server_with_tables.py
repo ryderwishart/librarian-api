@@ -21,6 +21,56 @@ available_files = list(list_files(sandbox_path, valid_extensions))
 print('available_files', available_files)
 macula_column_name_string = '''`xmlid` Nullable(String), `ref` Nullable(String), `class` Nullable(String), `text` Nullable(String), `transliteration` Nullable(String), `after` Nullable(String), `strongnumberx` Nullable(String), `stronglemma` Nullable(String), `sensenumber` Nullable(String), `greek` Nullable(String), `greekstrong` Nullable(String), `gloss` Nullable(String), `english` Nullable(String), `mandarin` Nullable(String), `stem` Nullable(String), `morph` Nullable(String), `lang` Nullable(String), `lemma` Nullable(String), `pos` Nullable(String), `person` Nullable(String), `gender` Nullable(String), `number` Nullable(String), `state` Nullable(String), `type` Nullable(String), `lexdomain` Nullable(String), `contextualdomain` Nullable(String), `coredomain` Nullable(String), `sdbh` Nullable(String), `extends` Nullable(String), `frame` Nullable(String), `subjref` Nullable(String), `participantref` Nullable(String), `role` Nullable(String), `normalized` Nullable(String), `strong` Nullable(String), `case` Nullable(String), `tense` Nullable(String), `voice` Nullable(String), `mood` Nullable(String), `degree` Nullable(String), `domain` Nullable(String), `ln` Nullable(String), `referent` Nullable(String), `vref` Nullable(String), `VREF` String, `TEXT` Nullable(String), `marble_ids` Nullable(String)'''
 
+macula_column_names = [
+            "xmlid",
+            "ref",
+            "class",
+            "text",
+            "transliteration",
+            "after",
+            "strongnumberx",
+            "stronglemma",
+            "sensenumber",
+            "greek",
+            "greekstrong",
+            "gloss",
+            "english",
+            "mandarin",
+            "stem",
+            "morph",
+            "lang",
+            "lemma",
+            "pos",
+            "person",
+            "gender",
+            "number",
+            "state",
+            "type",
+            "lexdomain",
+            "contextualdomain",
+            "coredomain",
+            "sdbh",
+            "extends",
+            "frame",
+            "subjref",
+            "participantref",
+            "role",
+            "normalized",
+            "strong",
+            "case",
+            "tense",
+            "voice",
+            "mood",
+            "degree",
+            "domain",
+            "ln",
+            "referent",
+            "vref",
+            "VREF",
+            "TEXT",
+            "marble_ids"
+        ]
+
 @app.route('/query', methods=['GET'])
 def query_clickhouse():
     table = request.args.get('file')
@@ -209,9 +259,11 @@ def query_chapter():
 
         # Execute the query for macula
         result_macula = client.execute(query_macula)
+        
+        
 
         # Return both results
-        return jsonify({'alignments': result_alignments, 'macula': result_macula})
+        return jsonify({'alignments': result_alignments, 'macula': result_macula, 'macula_column_names': macula_column_names})
     except Exception as e:
         return jsonify({'error': str(e)})
 
