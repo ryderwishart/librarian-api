@@ -169,8 +169,7 @@ def initialize_clickhouse():
                 json_data JSON
             ) ENGINE = MergeTree()
             ORDER BY vref
-            SETTINGS allow_nullable_key = 1
-            SETTINGS allow_experimental_object_type = 1;
+            SETTINGS allow_nullable_key = 1, allow_experimental_object_type = 1;
             """
             print('Creating alignments table')
             client.execute(create_table_query)
