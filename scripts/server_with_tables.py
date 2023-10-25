@@ -158,6 +158,14 @@ def initialize_clickhouse():
     print(f"Found {len(all_jsonl_files)} JSONL files", all_jsonl_files)
     
     for jsonl_file in all_jsonl_files:        
+        # turn all escaped double quotes into single quotes in the file globally
+        with open(jsonl_file, 'r') as f:
+            print(f"Escaping double quotes in {jsonl_file}")
+            data = f.read()
+            data = data.replace('\\"', "'")
+        with open(jsonl_file, 'w') as f:
+            f.write(data)
+        
         translation = jsonl_file.split('/')[1]
         table_name = f'{translation}_alignment'
         try:
@@ -169,7 +177,7 @@ def initialize_clickhouse():
             create_table_query = f"""
             CREATE TABLE IF NOT EXISTS {table_name} (
                 vref String,
-                json_data JSON
+                json_data String
             ) ENGINE = MergeTree()
             ORDER BY vref
             SETTINGS allow_nullable_key = 1;
@@ -187,7 +195,7 @@ def initialize_clickhouse():
             insert_data_query = f"""
             INSERT INTO {table_name}
             SELECT *
-            FROM file('{jsonl_file}', 'TSV', 'vref String, json_data JSON');
+            FROM file('{jsonl_file}', 'TSV', 'vref String, json_data String');
             """
             print('Inserting data from JSONL files')
             client.execute(insert_data_query, settings={
@@ -201,6 +209,14 @@ def initialize_clickhouse():
     print(f"Found {len(all_hottp_tsv_files)} HOTTP TSV files", all_hottp_tsv_files)
     
     for hottp_tsv_file in all_hottp_tsv_files:
+        # turn all escaped double quotes into single quotes in the file globally
+        with open(hottp_tsv_file, 'r') as f:
+            print(f"Escaping double quotes in {hottp_tsv_file}")
+            data = f.read()
+            data = data.replace('\\"', "'")
+        with open(hottp_tsv_file, 'w') as f:
+            f.write(data)
+        
         # hottp/HOTTP_translated_spa_Latn.tsv --> spa_Latn
         hottp_translation = '_'.join(hottp_tsv_file.split('/')[1].split('_')[-2:]).split('.')[0] # FIXME: this is a stupid way for me to have done this.
         hottp_table_name = f'hottp_{hottp_translation}'
@@ -213,7 +229,7 @@ def initialize_clickhouse():
             create_table_query = f"""
             CREATE TABLE IF NOT EXISTS {hottp_table_name} (
                 refArray Array(String),
-                json_data JSON
+                json_data String
             ) ENGINE = MergeTree()
             ORDER BY refArray;
             """
@@ -230,7 +246,7 @@ def initialize_clickhouse():
             insert_data_query = f"""
             INSERT INTO {hottp_table_name}
             SELECT *
-            FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data JSON');
+            FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data String');
             """
             print('Inserting data from HOTTP TSV files')
             client.execute(insert_data_query, settings={
