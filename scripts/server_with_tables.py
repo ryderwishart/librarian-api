@@ -319,7 +319,7 @@ def query_hottp():
         # query += f" LIMIT {limit}"
 
         # Execute the query
-        result = client.execute(query)
+        result = client.execute(query) #? TODO: should we json parse the stringified json_data before sending to frontend?
         return jsonify(result)
     
     except Exception as e:

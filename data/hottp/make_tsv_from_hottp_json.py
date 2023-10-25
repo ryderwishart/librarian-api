@@ -6,7 +6,6 @@ def process_json_file(json_file):
         data = json.load(f)
 
     filename = json_file.split('.')[0]
-
     output_file = f'{filename}.tsv'
     
     # if output file exists, write over it
@@ -15,14 +14,14 @@ def process_json_file(json_file):
 
     for entry in data['HOTTP_Entries']['HOTTP_Entry']:
         refs = entry['References']['Reference']
+        entry_json = json.dumps(entry, ensure_ascii=False)
+        ref_value = json.dumps(refs if isinstance(refs, list) else [refs], ensure_ascii=False)
+
+        # replace tab and newline characters
+        ref_value = ref_value.replace('\t', '\\t').replace('\n', '\\n')
+        entry_json = entry_json.replace('\t', '\\t').replace('\n', '\\n')
 
         with open(output_file, 'a') as f:
-            # write the refs array, \t, and then a json dump of the entry
-            entry_json = json.dumps(entry, ensure_ascii=False)
-            
-            # sometimes refs will be a string, and sometimes an array. It should always be an array
-            ref_value = refs if isinstance(refs, list) else [refs]
-            
             f.write(f'{ref_value}\t{entry_json}\n')
 
 for file in os.listdir('.'):
