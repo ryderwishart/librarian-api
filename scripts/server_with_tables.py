@@ -166,7 +166,7 @@ def initialize_clickhouse():
             create_table_query = f"""
             CREATE TABLE IF NOT EXISTS {table_name} (
                 vref String,
-                json_data String
+                json_data JSON
             ) ENGINE = MergeTree()
             ORDER BY vref
             SETTINGS allow_nullable_key = 1;
@@ -181,7 +181,7 @@ def initialize_clickhouse():
             insert_data_query = f"""
             INSERT INTO {table_name}
             SELECT *
-            FROM file('{jsonl_file}', 'TSV', 'vref String, json_data String');
+            FROM file('{jsonl_file}', 'TSV', 'vref String, json_data JSON');
             """
             print('Inserting data from JSONL files')
             client.execute(insert_data_query)
