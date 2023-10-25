@@ -193,7 +193,7 @@ def initialize_clickhouse():
     
     for hottp_tsv_file in all_hottp_tsv_files:
         # hottp/HOTTP_translated_spa_Latn.tsv --> spa_Latn
-        hottp_translation = hottp_tsv_file.split('/')[1].split('_')[-1].split('.')[0]
+        hottp_translation = hottp_tsv_file.split('/')[1].split('_')[-2:].split('.')[0] # FIXME: this is a stupid way for me to have done this.
         hottp_table_name = f'hottp_{hottp_translation}'
         client.execute(f'DROP TABLE IF EXISTS {hottp_table_name}')
 
