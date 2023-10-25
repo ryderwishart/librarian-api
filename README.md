@@ -77,6 +77,30 @@ python3 make_tsv_from_hottp_json.py
 
 ## Running the flask server
 
+### If everything is installed
+
+```bash
+# Navigate to scripts folder
+cd librarian-api/scripts
+# Activate virtual env
+source api_venv/bin/activate
+
+# Get updates
+git fetch && git pull
+# Change shell script permissions to executable
+chmod +x run_server.sh 
+# Run the server
+./run_server.sh
+```
+
+While the server is running, you can access the clickhouse client using:
+
+```bash
+../../clickhouse client
+```
+
+### Setup for the first time
+
 Install Flask, clickhouse-driver, and gunicorn:
 
 `apt install python3-pip`
@@ -91,7 +115,6 @@ Install Flask, clickhouse-driver, and gunicorn:
 
 `pip install gunicorn`
 
-`gunicorn -w 4 -b 0.0.0.0:5000 server:app` (don't need this script anymore) or 
 `gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
 
 Using postman, test the API endpoint by querying:
