@@ -15,7 +15,7 @@ nohup ../../clickhouse server >/dev/null 2>&1 &
 
 # Wait for ClickHouse server to start
 echo "Waiting for ClickHouse server to start..."
-while ! curl --output /dev/null --silent --head --fail http://localhost:8123; do sleep 1 && echo -n .; done;
+while ! curl --output /dev/null --silent --head --fail http://localhost:8123; do sleep 1 && echo -n .; done
 echo "ClickHouse server started."
 
 echo "Starting WSGI server..."
@@ -23,7 +23,7 @@ echo "Starting WSGI server..."
 nohup gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app >/dev/null 2>&1 &
 # Wait for the WSGI server to start
 echo "Waiting for WSGI server to start..."
-while ! curl --output /dev/null --silent --head --fail http://localhost:5000; do sleep 1 && echo -n .; done;
+while ! curl --output /dev/null --silent --head --fail 'http://localhost:5000/query?file=macula/macula-with-marble-ids.tsv&search_string=ROM 1:9&column_name=VREF&limit=3'; do sleep 1 && echo -n .; done
 echo "API server started on port 5000."
 
 # Optionally, you can redirect output to log files instead of /dev/null for debugging purposes:
