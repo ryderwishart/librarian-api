@@ -301,7 +301,7 @@ def query_chapter():
 # endpoint to get hottp data when a given ref is in the refArray
 @app.route('/hottp', methods=['GET'])
 def query_hottp():
-    marbleRef = request.args.get('marbleRef', '')
+    marbleRef = request.args.get('marbleRef', '') # NOTE: can be a partial or complete marbleRef. The beginning of the ID must be complete. The end can be truncated.
     # limit = request.args.get('limit', 5)
     translation = request.args.get('translation', 'spa_Latn')
     try:
@@ -313,7 +313,7 @@ def query_hottp():
         if not marbleRef:
             return jsonify({'error': 'Please provide a marbleRef arg (i.e., a UBS Marble project ID)'})
     
-        query += f" WHERE arrayExists(x -> x = '{marbleRef}', refArray)"
+        query += f" WHERE arrayExists(x -> x LIKE '{marbleRef}%', refArray)"
 
         # Add a LIMIT clause to limit the results
         # query += f" LIMIT {limit}"
