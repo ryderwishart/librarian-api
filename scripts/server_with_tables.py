@@ -169,7 +169,8 @@ def initialize_clickhouse():
                 json_data JSON
             ) ENGINE = MergeTree()
             ORDER BY vref
-            SETTINGS allow_nullable_key = 1;
+            SETTINGS allow_nullable_key = 1
+            SETTINGS allow_experimental_object_type = 1;
             """
             print('Creating alignments table')
             client.execute(create_table_query)
@@ -201,9 +202,10 @@ def initialize_clickhouse():
             create_table_query = f"""
             CREATE TABLE IF NOT EXISTS {hottp_table_name} (
                 refArray Array(String),
-                json_data String
+                json_data JSON
             ) ENGINE = MergeTree()
-            ORDER BY refArray;
+            ORDER BY refArray
+            SETTINGS allow_experimental_object_type = 1;
             """
             print('Creating alignments table')
             client.execute(create_table_query)
@@ -215,7 +217,7 @@ def initialize_clickhouse():
             insert_data_query = f"""
             INSERT INTO {hottp_table_name}
             SELECT *
-            FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data String');
+            FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data JSON');
             """
             print('Inserting data from HOTTP TSV files')
             client.execute(insert_data_query)
