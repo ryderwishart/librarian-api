@@ -131,6 +131,11 @@ def query_macula():
         return jsonify({'error': str(e)})
 
 def initialize_clickhouse():
+    try:
+        client.execute('SET allow_experimental_object_type = 1;')
+    except Exception as e:
+        print(f"Could not set allow_experimental_object_type: {e}")
+    
     # Create the table
     try:
         create_table_query = f"""
@@ -169,7 +174,7 @@ def initialize_clickhouse():
                 json_data JSON
             ) ENGINE = MergeTree()
             ORDER BY vref
-            SETTINGS allow_nullable_key = 1, allow_experimental_object_type = 1;
+            SETTINGS allow_nullable_key = 1;
             """
             print('Creating alignments table')
             client.execute(create_table_query)
@@ -203,8 +208,7 @@ def initialize_clickhouse():
                 refArray Array(String),
                 json_data JSON
             ) ENGINE = MergeTree()
-            ORDER BY refArray
-            SETTINGS allow_experimental_object_type = 1;
+            ORDER BY refArray;
             """
             print('Creating alignments table')
             client.execute(create_table_query)
