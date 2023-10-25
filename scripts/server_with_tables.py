@@ -131,11 +131,6 @@ def query_macula():
         return jsonify({'error': str(e)})
 
 def initialize_clickhouse():
-    try:
-        client.execute('SET allow_experimental_object_type = 1;')
-    except Exception as e:
-        print(f"Could not set allow_experimental_object_type: {e}")
-    
     # Create the table
     try:
         create_table_query = f"""
@@ -165,7 +160,10 @@ def initialize_clickhouse():
     for jsonl_file in all_jsonl_files:        
         translation = jsonl_file.split('/')[1]
         table_name = f'{translation}_alignment'
-        client.execute(f'DROP TABLE IF EXISTS {table_name}')
+        try:
+            client.execute(f'DROP TABLE IF EXISTS {table_name}')
+        except:
+            pass
 
         try: 
             create_table_query = f"""
@@ -177,7 +175,10 @@ def initialize_clickhouse():
             SETTINGS allow_nullable_key = 1;
             """
             print('Creating alignments table')
-            client.execute(create_table_query)
+            client.execute(create_table_query, settings={
+                'allow_experimental_object_type': 1,
+                'namedtuple_as_json': False
+            })
         except Exception as e:
             print(f"Could not create table: {e}")
 
@@ -200,7 +201,10 @@ def initialize_clickhouse():
         # hottp/HOTTP_translated_spa_Latn.tsv --> spa_Latn
         hottp_translation = '_'.join(hottp_tsv_file.split('/')[1].split('_')[-2:]).split('.')[0] # FIXME: this is a stupid way for me to have done this.
         hottp_table_name = f'hottp_{hottp_translation}'
-        client.execute(f'DROP TABLE IF EXISTS {hottp_table_name}')
+        try:
+            client.execute(f'DROP TABLE IF EXISTS {hottp_table_name}')
+        except:
+            pass
 
         try: 
             create_table_query = f"""
@@ -210,8 +214,11 @@ def initialize_clickhouse():
             ) ENGINE = MergeTree()
             ORDER BY refArray;
             """
-            print('Creating alignments table')
-            client.execute(create_table_query)
+            print('Creating HOTTP table')
+            client.execute(create_table_query, settings={
+                'allow_experimental_object_type': 1,
+                'namedtuple_as_json': False
+            })
         except Exception as e:
             print(f"Could not create table: {e}")
 
