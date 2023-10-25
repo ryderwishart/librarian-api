@@ -190,7 +190,10 @@ def initialize_clickhouse():
             FROM file('{jsonl_file}', 'TSV', 'vref String, json_data JSON');
             """
             print('Inserting data from JSONL files')
-            client.execute(insert_data_query)
+            client.execute(insert_data_query, settings={
+                'allow_experimental_object_type': 1,
+                'namedtuple_as_json': False
+            })
         except Exception as e:
             print(f"Could not insert data from JSONL files: {e}")
             
@@ -230,7 +233,10 @@ def initialize_clickhouse():
             FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data JSON');
             """
             print('Inserting data from HOTTP TSV files')
-            client.execute(insert_data_query)
+            client.execute(insert_data_query, settings={
+                'allow_experimental_object_type': 1,
+                'namedtuple_as_json': False
+            })
         except Exception as e:
             print(f"Could not insert data from HOTTP TSV files: {e}")
 
