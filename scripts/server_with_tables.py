@@ -131,7 +131,6 @@ def query_macula():
         return jsonify({'error': str(e)})
 
 def initialize_clickhouse():
-    
     # Create the table
     try:
         create_table_query = f"""
@@ -194,13 +193,13 @@ def initialize_clickhouse():
     
     for hottp_tsv_file in all_hottp_tsv_files:
         # hottp/HOTTP_translated_spa_Latn.tsv --> spa_Latn
-        translation = hottp_tsv_file.split('/')[1].split('_')[-1].split('.')[0]
-        table_name = f'{translation}_alignment'
-        client.execute(f'DROP TABLE IF EXISTS {table_name}')
+        hottp_translation = hottp_tsv_file.split('/')[1].split('_')[-1].split('.')[0]
+        hottp_table_name = f'hottp_{hottp_translation}'
+        client.execute(f'DROP TABLE IF EXISTS {hottp_table_name}')
 
         try: 
             create_table_query = f"""
-            CREATE TABLE IF NOT EXISTS hottp_{table_name} (
+            CREATE TABLE IF NOT EXISTS {hottp_table_name} (
                 refArray Array(String),
                 json_data String
             ) ENGINE = MergeTree()
@@ -214,7 +213,7 @@ def initialize_clickhouse():
         
         try:
             insert_data_query = f"""
-            INSERT INTO hottp_{table_name}
+            INSERT INTO {hottp_table_name}
             SELECT *
             FROM file('{hottp_tsv_file}', 'TSV', 'refs Array(String), json_data String');
             """

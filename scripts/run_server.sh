@@ -4,7 +4,7 @@
 
 echo -e "\e[32mSetting up virtual environment...\e[0m"
 # Activate the virtual environment
-source api_venv/bin/activate
+source api_venv/bin/activate # Note, this doesn't seem to be working, so I have to do it manually before running this script
 
 echo -e "\e[32mAttempting to stop any running ClickHouse and Gunicorn processes...\e[0m"
 # Kill any running ClickHouse and Gunicorn processes
