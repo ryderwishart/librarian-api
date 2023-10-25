@@ -19,7 +19,7 @@ def process_json_file(json_file):
 
         # replace tab and newline characters
         # ref_value = ref_value.replace('\t', '\\t').replace('\n', '\\n')
-        entry_json = entry_json.replace('\t', '\\t').replace('\n', '\\n')
+        # entry_json = entry_json.replace('\t', '\\t').replace('\n', '\\n')
 
         with open(output_file, 'a') as f:
             f.write(f'{ref_value}\t{entry_json}\n')
