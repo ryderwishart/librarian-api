@@ -131,7 +131,7 @@ def query_macula():
         return jsonify({'error': str(e)})
 
 def initialize_clickhouse():
-    # Create the table
+    # Create the tables # FIXME: we need to move this out into a separate script that runs on startup, otherwise it will run with four workers and happen four times.
     try:
         create_table_query = f"""
         CREATE TABLE IF NOT EXISTS macula ({macula_column_name_string}) ENGINE = MergeTree()
@@ -159,11 +159,11 @@ def initialize_clickhouse():
     
     for jsonl_file in all_jsonl_files:        
         # turn all escaped double quotes into single quotes in the file globally
-        with open(jsonl_file, 'r') as f:
+        with open(os.path.join(sandbox_path, jsonl_file), 'r') as f:
             print(f"Escaping double quotes in {jsonl_file}")
             data = f.read()
             data = data.replace('\\"', "'")
-        with open(jsonl_file, 'w') as f:
+        with open(os.path.join(sandbox_path, jsonl_file), 'w') as f:
             f.write(data)
         
         translation = jsonl_file.split('/')[1]
@@ -210,11 +210,11 @@ def initialize_clickhouse():
     
     for hottp_tsv_file in all_hottp_tsv_files:
         # turn all escaped double quotes into single quotes in the file globally
-        with open(hottp_tsv_file, 'r') as f:
+        with open(os.path.join(sandbox_path, hottp_tsv_file), 'r') as f:
             print(f"Escaping double quotes in {hottp_tsv_file}")
             data = f.read()
             data = data.replace('\\"', "'")
-        with open(hottp_tsv_file, 'w') as f:
+        with open(os.path.join(sandbox_path, hottp_tsv_file), 'w') as f:
             f.write(data)
         
         # hottp/HOTTP_translated_spa_Latn.tsv --> spa_Latn
@@ -272,6 +272,8 @@ def initialize_clickhouse():
     #     client.execute(create_index_query_VREF)
     # except Exception as e:
     #     print(f"Could not create index: {e}")
+    
+    print('Done initializing ClickHouse!')
 
 @app.route('/alignments', methods=['GET'])
 def query_alignments():
