@@ -310,6 +310,7 @@ def query_alignments():
 def query_chapter():
     book = request.args.get('book', '') # e.g., GEN, ROM, 
     chapter = request.args.get('chapter', '') 
+    verse = request.args.get('verse', '%') # NOTE: vref is '%' by default so that it can be a wildcard if not provided as arg
     translation = request.args.get('translation', 'spanish')
     
     try:
@@ -317,7 +318,8 @@ def query_chapter():
         table_name_alignments = f'{translation}_alignment'
         query_alignments = f"""
         SELECT * FROM {table_name_alignments}
-        WHERE vref LIKE '{book} {chapter}:%'
+        WHERE vref LIKE '{book} {chapter}:{verse}'
+        ORDER BY xmlid
         """
 
         # Execute the query for alignments
@@ -327,14 +329,12 @@ def query_chapter():
         table_name_macula = 'macula'
         query_macula = f"""
         SELECT * FROM {table_name_macula}
-        WHERE vref LIKE '{book} {chapter}:%'
+        WHERE vref LIKE '{book} {chapter}:{verse}'
         """
 
         # Execute the query for macula
         result_macula = client.execute(query_macula)
         
-        
-
         # Return both results
         return jsonify({'alignments': result_alignments, 'macula': result_macula, 'macula_column_names': macula_column_names})
     except Exception as e:
