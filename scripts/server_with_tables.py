@@ -305,13 +305,16 @@ def query_alignments():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-# endpoint to get 1 chapter worth of alignments and macula rows 
-@app.route('/chapter', methods=['GET'])
-def query_chapter():
+# endpoint to get 1 passage worth of alignments and macula rows 
+@app.route('/passage', methods=['GET'])
+def query_passage():
     book = request.args.get('book', '') # e.g., GEN, ROM, 
     chapter = request.args.get('chapter', '') 
     verse = request.args.get('verse', '%') # NOTE: vref is '%' by default so that it can be a wildcard if not provided as arg
     translation = request.args.get('translation', 'spanish')
+    
+    if not book or not chapter:
+        return jsonify({'error': 'Please provide a `book` and `chapter` (and optionally `verse`) arg'})
     
     try:
         # Prepare the query for alignments
@@ -319,7 +322,6 @@ def query_chapter():
         query_alignments = f"""
         SELECT * FROM {table_name_alignments}
         WHERE vref LIKE '{book} {chapter}:{verse}'
-        ORDER BY xmlid
         """
 
         # Execute the query for alignments
