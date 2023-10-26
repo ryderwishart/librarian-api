@@ -132,6 +132,12 @@ def query_macula():
 
 def initialize_clickhouse():
     # Create the tables # FIXME: we need to move this out into a separate script that runs on startup, otherwise it will run with four workers and happen four times.
+    # try dropping the macula table first
+    try:
+        client.execute('DROP TABLE IF EXISTS macula')
+    except:
+        pass
+    
     try:
         create_table_query = f"""
         CREATE TABLE IF NOT EXISTS macula ({macula_column_name_string}) ENGINE = MergeTree()
