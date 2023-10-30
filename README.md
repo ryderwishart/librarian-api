@@ -149,3 +149,9 @@ With limited file space you can skip the backup file (since you can always resto
 ```bash
 find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i -e 's/{"vref": "\([^"]*\)".*/\1\t&/' {}
 ```
+
+Let's also format the alignment files by turning escaped double quotes into single quotes:
+
+```bash
+find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i -e 's/{"vref": "\([^"]*\)".*/\1\t&/' -e 's/\\"/'\''/g' {}
+```
