@@ -17,14 +17,15 @@ sudo apt-get install unzip
 `find . -name '*.zip' -exec sh -c 'unzip -d "$(dirname "$1")" "$1"' _ {} \;`
 `find . -name '__MACOSX' -exec rm -rf {} + 2>/dev/null`
 
-Move all files to clickhouse user_files (might need to start server at least once before you do this?)
-
-`mv ./data/* ../user_files/`
-
 Start Clickhouse server and client
 
 `curl https://clickhouse.com/ | sh`
 `./clickhouse server`
+
+Move all data files to clickhouse user_files (need to start server at least once before you do this)
+
+`mv ./data/* user_files/`
+
 
 In another shell, start the client
 
@@ -84,6 +85,8 @@ python3 make_tsv_from_hottp_json.py
 cd librarian-api/scripts
 # Activate virtual env
 source api_venv/bin/activate
+# if virtual env is not installed, run:
+# python3 -m venv api_venv
 
 # Get updates
 git fetch && git pull
@@ -116,6 +119,10 @@ Install Flask, clickhouse-driver, and gunicorn:
 `pip install gunicorn`
 
 `gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
+
+If you are having trouble finding the virtual env for gunicorn (or another library), try specifying the full path. E.g.,
+
+`./api_venv/bin/gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
 
 Using postman, test the API endpoint by querying:
 

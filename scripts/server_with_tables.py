@@ -131,12 +131,18 @@ def query_macula():
         return jsonify({'error': str(e)})
 
 def initialize_clickhouse():
+    tables = client.execute("SHOW TABLES")
+    if 'macula' in tables and all(f'{translation}_alignment' in tables for translation in translations):
+        print('Tables already exist, skipping initialization')
+        return
+    
     # Create the tables # FIXME: we need to move this out into a separate script that runs on startup, otherwise it will run with four workers and happen four times.
     # try dropping the macula table first
     try:
         client.execute('DROP TABLE IF EXISTS macula')
-    except:
-        pass
+    except Exception as e:
+        print(f"Could not drop macula table: {e}")
+        print('Continuing with initialization...')
     
     try:
         create_table_query = f"""
