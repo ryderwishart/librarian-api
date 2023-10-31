@@ -23,6 +23,10 @@ echo -e "\e[32mClickHouse server started.\e[0m"
 
 cd librarian-api/scripts/
 
+# Run init_server.py to create the database and tables
+echo -e "\e[32mCreating database and tables...\e[0m"
+python3 init_server.py
+
 echo -e "\e[32mStarting WSGI server...\e[0m"
 # Start the Flask application with Gunicorn in the background, redirecting output to /dev/null
 nohup gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app >/dev/null 2>&1 &

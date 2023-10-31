@@ -114,9 +114,7 @@ Install Flask, clickhouse-driver, and gunicorn:
 
 `source api_venv/bin/activate`
 
-`pip install Flask clickhouse-driver`
-
-`pip install gunicorn`
+`pip install Flask clickhouse-driver gunicorn`
 
 `gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
 
