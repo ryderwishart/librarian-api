@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from clickhouse_driver import Client
 import os
 from flask_httpauth import HTTPTokenAuth
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 auth = HTTPTokenAuth(scheme='Bearer')
