@@ -1,10 +1,17 @@
 from flask import Flask, request, jsonify
 from clickhouse_driver import Client
 import os
+from flask_httpauth import HTTPTokenAuth
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 app = Flask(__name__)
+auth = HTTPTokenAuth(scheme='Bearer')
 client = Client('localhost')
+SECRET_KEY = os.environ.get('SECRET_AUTH_KEY')
 
+@auth.verify_token
+def verify_token(token):
+    return token == SECRET_KEY
 
 def list_files(directory, extensions):
     for root, dirs, files in os.walk(directory):
@@ -72,6 +79,7 @@ macula_column_names = [
         ]
 
 @app.route('/query', methods=['GET'])
+@auth.login_required
 def query_clickhouse():
     table = request.args.get('file')
     search_string = request.args.get('search_string', '')
@@ -104,6 +112,7 @@ def query_clickhouse():
         return jsonify({'error': str(e)})
 
 @app.route('/macula', methods=['GET']) # FIXME: the macula table is not consistently compressing data or something. Queries fail every time currently. Alignments table seems to work fine.
+@auth.login_required
 def query_macula():
     search_string = request.args.get('search_string', '')
     column_name = request.args.get('column_name', '')
@@ -288,6 +297,7 @@ def initialize_clickhouse():
     print('Done initializing ClickHouse!')
 
 @app.route('/alignments', methods=['GET'])
+@auth.login_required
 def query_alignments():
     vref = request.args.get('vref', '')
     limit = request.args.get('limit', 5)
@@ -313,6 +323,7 @@ def query_alignments():
 
 # endpoint to get 1 passage worth of alignments and macula rows 
 @app.route('/passage', methods=['GET'])
+@auth.login_required
 def query_passage():
     book = request.args.get('book', '') # e.g., GEN, ROM, 
     chapter = request.args.get('chapter', '') 
@@ -350,6 +361,7 @@ def query_passage():
     
 # endpoint to get hottp data when a given ref is in the refArray
 @app.route('/hottp', methods=['GET'])
+@auth.login_required
 def query_hottp():
     marbleRef = request.args.get('marbleRef', '') # NOTE: can be a partial or complete marbleRef. The beginning of the ID must be complete. The end can be truncated.
     # limit = request.args.get('limit', 5)
