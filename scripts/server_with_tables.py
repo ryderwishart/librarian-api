@@ -281,7 +281,7 @@ def resolve_ids():
             result.append({'maculaId': row[0], 'marbleId': row[1]})
     
     # Deduplicate the result
-    result = list(set(result))
+    result = [i for n, i in enumerate(result) if i not in result[n + 1:]]
     
     # Return the rows
     return jsonify(result)
