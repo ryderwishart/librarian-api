@@ -229,7 +229,7 @@ def initialize_clickhouse():
         insert_data_query = f"""
         INSERT INTO {marble_macula_table_name}
         SELECT *
-        FROM file('mappings/marble-macula-id-mappings.csv', 'CSVWithNames', 'maculaId Nullable(String), marbleId Nullable(String)');
+        FROM file('mappings/marble-macula-id-mappings.csv', 'CSV', 'maculaId Nullable(String), marbleId Nullable(String)');
         """
         print('Inserting data from marble-macula mappings CSV file')
         client.execute(insert_data_query)
