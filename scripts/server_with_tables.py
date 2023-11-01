@@ -241,6 +241,9 @@ def resolve_ids():
     macula_ids = request.args.get('maculaIds', '').split(',')
     marble_ids = request.args.get('marbleIds', '').split(',')
     
+    print('querying macula_ids', macula_ids)
+    print('querying marble_ids', marble_ids)
+    
     if not macula_ids and not marble_ids:
         return jsonify({'error': 'Please provide URL params `maculaIds` and/or `marbleIds` (both formatted as comma-separated lists, e.g., `maculaIds=o010010010011,o010010010031`)'})
 
@@ -252,7 +255,7 @@ def resolve_ids():
         table_name = 'marble_macula_mappings'
         query = f"""
         SELECT * FROM {table_name}
-        WHERE maculaId LIKE '{id}%'
+        WHERE maculaId = '{id}'
         """
         # Execute the query
         rows = client.execute(query)
@@ -271,7 +274,7 @@ def resolve_ids():
         table_name = 'marble_macula_mappings'
         query = f"""
         SELECT * FROM {table_name}
-        WHERE marbleId LIKE '{id}%'
+        WHERE marbleId = '{id}'
         """
         # Execute the query
         rows = client.execute(query)
