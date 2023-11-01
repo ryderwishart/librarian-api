@@ -77,7 +77,7 @@ def initialize_clickhouse():
     tables = client.execute("SHOW TABLES")
     print('Existing tables:', tables)
     
-    if 'macula' in tables and all(f'{translation}_alignment' in tables for translation in translations):
+    if 'macula' in tables and 'marble_macula_mappings' and all(f'{translation}_alignment' in tables for translation in translations):
         print('Tables already exist, skipping initialization')
         return
     
@@ -212,6 +212,28 @@ def initialize_clickhouse():
         except Exception as e:
             print(f"Could not insert data from HOTTP TSV files: {e}")
 
+    # Create a table from mappings/marble-macula-id-mappings.csv, with type "CSV" and columns maculaId String, marbleId String
+    try:
+        marble_macula_table_name = 'marble_macula_mappings'
+        client.execute(f'DROP TABLE IF EXISTS {marble_macula_table_name}')
+        create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {marble_macula_table_name} (
+            maculaId String,
+            marbleId String
+        ) ENGINE = MergeTree()
+        ORDER BY maculaId;
+        """
+        print('Creating marble-macula mappings table')
+        client.execute(create_table_query)
+        insert_data_query = f"""
+        INSERT INTO {marble_macula_table_name}
+        SELECT *
+        FROM file('mappings/marble-macula-id-mappings.csv', 'CSV', 'maculaId String, marbleId String');
+        """
+        print('Inserting data from marble-macula mappings CSV file')
+        client.execute(insert_data_query)
+    except Exception as e:
+        print(f"Could not create or insert data into marble-macula mappings table: {e}")
     # # Create the index (assuming you want to create an index on column1)
     # try:
     #     create_index_query_xmlid = """
