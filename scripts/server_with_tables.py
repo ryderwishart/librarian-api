@@ -238,18 +238,37 @@ def query_hottp():
 @auth.login_required
 def resolve_ids():
     # e.g., http://75.155.154.94:8080/resolveIds?ids=o010010010011,o010010010031
-    ids = request.args.get('ids', '').split(',')
-    if len(ids) == 0 or ids[0] == '':
-        return jsonify({'error': 'Please provide a comma-separated list of id strings'})
+    macula_ids = request.args.get('maculaIds', '').split(',')
+    marble_ids = request.args.get('marbleIds', '').split(',')
+    
+    if not macula_ids and not marble_ids:
+        return jsonify({'error': 'Please provide URL params `maculaIds` and/or `marbleIds` (both formatted as comma-separated lists, e.g., `maculaIds=o010010010011,o010010010031`)'})
 
     result = []
     
-    for id in ids:
+    for id in macula_ids:
         # Prepare the query
         table_name = 'marble_macula_mappings'
         query = f"""
         SELECT * FROM {table_name}
-        WHERE maculaId LIKE '%{id}%' OR marbleId LIKE '{id}%'
+        WHERE maculaId LIKE '{id}%'
+        """
+        # Execute the query
+        rows = client.execute(query)
+        
+         # Check if rows is empty
+        if not rows:
+            pass
+        
+        for row in rows:
+            result.append({'maculaId': row[0], 'marbleId': row[1]})
+    
+    for id in marble_ids:
+        # Prepare the query
+        table_name = 'marble_macula_mappings'
+        query = f"""
+        SELECT * FROM {table_name}
+        WHERE marbleId LIKE '{id}%'
         """
         # Execute the query
         rows = client.execute(query)
