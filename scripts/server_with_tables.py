@@ -248,7 +248,7 @@ def resolve_ids():
     prefix_dict = {}
     for i, id in enumerate(macula_ids):
         if id and id[0].isalpha():
-            prefix_dict[id] = id[0]
+            prefix_dict[id[1:]] = id
             macula_ids[i] = id[1:]
     
     if not macula_ids and not marble_ids:
@@ -274,7 +274,7 @@ def resolve_ids():
         for row in rows:
             if row[0] not in seen_ids:
                 if row[0] in prefix_dict:
-                    result.append({'maculaId': prefix_dict[row[0]] + row[0], 'marbleId': row[1]})
+                    result.append({'maculaId': prefix_dict[row[0]], 'marbleId': row[1]})
                 else:
                     result.append({'maculaId': row[0], 'marbleId': row[1]})
                 seen_ids.add(row[0])
