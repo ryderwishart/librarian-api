@@ -212,23 +212,24 @@ def initialize_clickhouse():
         except Exception as e:
             print(f"Could not insert data from HOTTP TSV files: {e}")
 
-    # Create a table from mappings/marble-macula-id-mappings.csv, with type "CSV" and columns maculaId String, marbleId String
+    # Create a table from mappings/marble-macula-id-mappings.csv
     try:
         marble_macula_table_name = 'marble_macula_mappings'
         client.execute(f'DROP TABLE IF EXISTS {marble_macula_table_name}')
         create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {marble_macula_table_name} (
-            maculaId String,
-            marbleId String
+            maculaId Nullable(String),
+            marbleId Nullable(String)
         ) ENGINE = MergeTree()
-        ORDER BY maculaId;
+        ORDER BY maculaId
+        SETTINGS allow_nullable_key = 1;
         """
         print('Creating marble-macula mappings table')
         client.execute(create_table_query)
         insert_data_query = f"""
         INSERT INTO {marble_macula_table_name}
         SELECT *
-        FROM file('mappings/marble-macula-id-mappings.csv', 'CSV', 'maculaId String, marbleId String');
+        FROM file('mappings/marble-macula-id-mappings.csv', 'CSVWithNames', 'maculaId Nullable(String), marbleId Nullable(String)');
         """
         print('Inserting data from marble-macula mappings CSV file')
         client.execute(insert_data_query)

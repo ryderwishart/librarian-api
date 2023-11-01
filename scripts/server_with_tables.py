@@ -234,6 +234,32 @@ def query_hottp():
     except Exception as e:
         return jsonify({'error': str(e)})
 
+@app.route('/resolveId', methods=['GET'])
+@auth.login_required
+def resolve_id():
+    id = request.args.get('id', '')
+    if not id:
+        return jsonify({'error': 'Please provide an id arg'})
+    
+    # Prepare the query
+    table_name = 'marble_macula_mappings'
+    query = f"""
+    SELECT * FROM {table_name}
+    WHERE maculaId LIKE '{id}%' OR marbleId LIKE '{id}%'
+    """
+    
+    # Execute the query
+    rows = client.execute(query)
+    
+    # Check if rows is empty
+    if not rows:
+        return jsonify({'error': 'No matching ids found'})
+    
+    result = [{'maculaId': row[0], 'marbleId': row[1]} for row in rows]
+    
+    # Return the rows
+    return jsonify(result)
+
 if __name__ == '__main__':
     print('Starting Flask server')
     app.run(host='0.0.0.0', port=5000)
