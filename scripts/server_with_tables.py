@@ -3,10 +3,12 @@ from clickhouse_driver import Client
 import os
 from flask_httpauth import HTTPTokenAuth
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, origins=["https://text-librarian.vercel.app/"])
 auth = HTTPTokenAuth(scheme='Bearer')
 client = Client('localhost')
 SECRET_KEY = os.environ.get('SECRET_AUTH_KEY')
