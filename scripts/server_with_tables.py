@@ -245,6 +245,7 @@ def resolve_ids():
         return jsonify({'error': 'Please provide URL params `maculaIds` and/or `marbleIds` (both formatted as comma-separated lists, e.g., `maculaIds=o010010010011,o010010010031`)'})
 
     result = []
+    seen_ids = set()
     
     for id in macula_ids:
         # Prepare the query
@@ -261,7 +262,9 @@ def resolve_ids():
             pass
         
         for row in rows:
-            result.append({'maculaId': row[0], 'marbleId': row[1]})
+            if row[0] not in seen_ids:
+                result.append({'maculaId': row[0], 'marbleId': row[1]})
+                seen_ids.add(row[0])
     
     for id in marble_ids:
         # Prepare the query
@@ -278,10 +281,9 @@ def resolve_ids():
             pass
         
         for row in rows:
-            result.append({'maculaId': row[0], 'marbleId': row[1]})
-    
-    # Deduplicate the result
-    result = [i for n, i in enumerate(result) if i not in result[n + 1:]]
+            if row[0] not in seen_ids:
+                result.append({'maculaId': row[0], 'marbleId': row[1]})
+                seen_ids.add(row[0])
     
     # Return the rows
     return jsonify(result)
