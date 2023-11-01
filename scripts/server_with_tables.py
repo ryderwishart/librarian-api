@@ -249,7 +249,7 @@ def resolve_ids():
         table_name = 'marble_macula_mappings'
         query = f"""
         SELECT * FROM {table_name}
-        WHERE maculaId LIKE '{id}%' OR marbleId LIKE '{id}%'
+        WHERE maculaId LIKE '%{id}%' OR marbleId LIKE '{id}%'
         """
         # Execute the query
         rows = client.execute(query)
