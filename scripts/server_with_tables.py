@@ -247,7 +247,7 @@ def resolve_ids():
     # if any of the macula ids begin with a letter prefix, remove the prefix and store it in a dict for later so we can add it back to the response
     prefix_dict = {}
     for i, id in enumerate(macula_ids):
-        if id[0].isalpha():
+        if id and id[0].isalpha():
             prefix_dict[id] = id[0]
             macula_ids[i] = id[1:]
     
