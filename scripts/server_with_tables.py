@@ -244,6 +244,13 @@ def resolve_ids():
     print('querying macula_ids', macula_ids)
     print('querying marble_ids', marble_ids)
     
+    # if any of the macula ids begin with a letter prefix, remove the prefix and store it in a dict for later so we can add it back to the response
+    prefix_dict = {}
+    for i, id in enumerate(macula_ids):
+        if id[0].isalpha():
+            prefix_dict[id] = id[0]
+            macula_ids[i] = id[1:]
+    
     if not macula_ids and not marble_ids:
         return jsonify({'error': 'Please provide URL params `maculaIds` and/or `marbleIds` (both formatted as comma-separated lists, e.g., `maculaIds=o010010010011,o010010010031`)'})
 
@@ -266,7 +273,10 @@ def resolve_ids():
         
         for row in rows:
             if row[0] not in seen_ids:
-                result.append({'maculaId': row[0], 'marbleId': row[1]})
+                if row[0] in prefix_dict:
+                    result.append({'maculaId': prefix_dict[row[0]] + row[0], 'marbleId': row[1]})
+                else:
+                    result.append({'maculaId': row[0], 'marbleId': row[1]})
                 seen_ids.add(row[0])
     
     for id in marble_ids:
