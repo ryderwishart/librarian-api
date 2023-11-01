@@ -153,3 +153,13 @@ Let's also format the alignment files by turning escaped double quotes into sing
 ```bash
 find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i -e 's/{"vref": "\([^"]*\)".*/\1\t&/' -e 's/\\"/'\''/g' {}
 ```
+
+If needed, you can also find all keys called "alignments" and rename them to "alignment":
+
+```bash
+find . -name '*.jsonl' -print0 | xargs -0 -I{} sed -i -e 's/"alignments"/"alignment"/g' {}
+```
+
+## Ports
+
+If your private IP works, but your public ip doesn't, you might need to run `sudo ufw allow 5000/tcp` to allow traffic.

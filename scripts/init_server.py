@@ -71,7 +71,12 @@ macula_column_names = [
 
 def initialize_clickhouse():
     sleep(5) # wait for clickhouse to start
+    all_jsonl_files = [f for f in available_files if f.endswith('.jsonl')]
+    translations = [f.split('/')[1] for f in all_jsonl_files]
+    
     tables = client.execute("SHOW TABLES")
+    print('Existing tables:', tables)
+    
     if 'macula' in tables and all(f'{translation}_alignment' in tables for translation in translations):
         print('Tables already exist, skipping initialization')
         return
@@ -106,7 +111,6 @@ def initialize_clickhouse():
         print(f"Could not insert data from TSV file: {e}")
         
     # Insert data from JSONL files prepended with vref values, making them tsvs
-    all_jsonl_files = [f for f in available_files if f.endswith('.jsonl')]
     print(f"Found {len(all_jsonl_files)} JSONL files", all_jsonl_files)
     
     for jsonl_file in all_jsonl_files:        
