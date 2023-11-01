@@ -237,10 +237,11 @@ def query_hottp():
 @app.route('/resolveIds', methods=['GET'])
 @auth.login_required
 def resolve_ids():
-    ids = request.args.get('ids', [])
-    if len(ids) == 0:
-        return jsonify({'error': 'Please provide an array of id strings'})
-    
+    # e.g., http://75.155.154.94:8080/resolveIds?ids=o010010010011,o010010010031
+    ids = request.args.get('ids', '').split(',')
+    if len(ids) == 0 or ids[0] == '':
+        return jsonify({'error': 'Please provide a comma-separated list of id strings'})
+
     result = []
     
     for id in ids:
