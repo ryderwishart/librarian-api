@@ -258,7 +258,8 @@ def resolve_ids():
         if not rows:
             pass
         
-        result.append(*[{'maculaId': row[0], 'marbleId': row[1]} for row in rows])
+        for row in rows:
+            result.append({'maculaId': row[0], 'marbleId': row[1]})
     
     # Return the rows
     return jsonify(result)
