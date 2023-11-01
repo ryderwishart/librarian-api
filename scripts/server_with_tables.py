@@ -234,28 +234,30 @@ def query_hottp():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-@app.route('/resolveId', methods=['GET'])
+@app.route('/resolveIds', methods=['GET'])
 @auth.login_required
-def resolve_id():
-    id = request.args.get('id', '')
-    if not id:
-        return jsonify({'error': 'Please provide an id arg'})
+def resolve_ids():
+    ids = request.args.get('ids', [])
+    if len(ids) == 0:
+        return jsonify({'error': 'Please provide an array of id strings'})
     
-    # Prepare the query
-    table_name = 'marble_macula_mappings'
-    query = f"""
-    SELECT * FROM {table_name}
-    WHERE maculaId LIKE '{id}%' OR marbleId LIKE '{id}%'
-    """
+    result = []
     
-    # Execute the query
-    rows = client.execute(query)
-    
-    # Check if rows is empty
-    if not rows:
-        return jsonify({'error': 'No matching ids found'})
-    
-    result = [{'maculaId': row[0], 'marbleId': row[1]} for row in rows]
+    for id in ids:
+        # Prepare the query
+        table_name = 'marble_macula_mappings'
+        query = f"""
+        SELECT * FROM {table_name}
+        WHERE maculaId LIKE '{id}%' OR marbleId LIKE '{id}%'
+        """
+        # Execute the query
+        rows = client.execute(query)
+        
+         # Check if rows is empty
+        if not rows:
+            pass
+        
+        result.append([{'maculaId': row[0], 'marbleId': row[1]} for row in rows])
     
     # Return the rows
     return jsonify(result)
