@@ -1,6 +1,7 @@
 from time import sleep
 from clickhouse_driver import Client
 import os
+from macula_data import macula_column_name_string, macula_column_names
 
 client = Client('localhost')
 
@@ -17,57 +18,6 @@ valid_extensions = ['.jsonl', '.json', '.tsv', '.csv', '.txt'] # FIXME: deduplic
 sandbox_path = '/root/user_files/' if os.path.exists('/root/user_files/') else '../user_files/'
 available_files = list(list_files(sandbox_path, valid_extensions))
 print('available_files', available_files)
-macula_column_name_string = '''`xmlid` Nullable(String), `ref` Nullable(String), `class` Nullable(String), `text` Nullable(String), `transliteration` Nullable(String), `after` Nullable(String), `strongnumberx` Nullable(String), `stronglemma` Nullable(String), `sensenumber` Nullable(String), `greek` Nullable(String), `greekstrong` Nullable(String), `gloss` Nullable(String), `english` Nullable(String), `mandarin` Nullable(String), `stem` Nullable(String), `morph` Nullable(String), `lang` Nullable(String), `lemma` Nullable(String), `pos` Nullable(String), `person` Nullable(String), `gender` Nullable(String), `number` Nullable(String), `state` Nullable(String), `type` Nullable(String), `lexdomain` Nullable(String), `contextualdomain` Nullable(String), `coredomain` Nullable(String), `sdbh` Nullable(String), `extends` Nullable(String), `frame` Nullable(String), `subjref` Nullable(String), `participantref` Nullable(String), `role` Nullable(String), `normalized` Nullable(String), `strong` Nullable(String), `case` Nullable(String), `tense` Nullable(String), `voice` Nullable(String), `mood` Nullable(String), `degree` Nullable(String), `domain` Nullable(String), `ln` Nullable(String), `referent` Nullable(String), `vref` Nullable(String), `VREF` String, `TEXT` Nullable(String), `marble_ids` Nullable(String)'''
-
-macula_column_names = [
-            "xmlid",
-            "ref",
-            "class",
-            "text",
-            "transliteration",
-            "after",
-            "strongnumberx",
-            "stronglemma",
-            "sensenumber",
-            "greek",
-            "greekstrong",
-            "gloss",
-            "english",
-            "mandarin",
-            "stem",
-            "morph",
-            "lang",
-            "lemma",
-            "pos",
-            "person",
-            "gender",
-            "number",
-            "state",
-            "type",
-            "lexdomain",
-            "contextualdomain",
-            "coredomain",
-            "sdbh",
-            "extends",
-            "frame",
-            "subjref",
-            "participantref",
-            "role",
-            "normalized",
-            "strong",
-            "case",
-            "tense",
-            "voice",
-            "mood",
-            "degree",
-            "domain",
-            "ln",
-            "referent",
-            "vref",
-            "VREF",
-            "TEXT",
-            "marble_ids"
-        ]
 
 def initialize_clickhouse():
     sleep(5) # wait for clickhouse to start
@@ -91,8 +41,10 @@ def initialize_clickhouse():
     
     try:
         create_table_query = f"""
-        CREATE TABLE IF NOT EXISTS macula ({macula_column_name_string}) ENGINE = MergeTree()
-        PRIMARY KEY (VREF);
+        CREATE TABLE IF NOT EXISTS macula ({macula_column_name_string}) 
+        ENGINE = MergeTree()
+        ORDER BY xmlid
+        SETTINGS allow_nullable_key = 1
         """
         print('Creating macula table')
         client.execute(create_table_query)
@@ -103,7 +55,7 @@ def initialize_clickhouse():
         insert_data_query = f"""
         INSERT INTO macula
         SELECT *
-        FROM file('macula/macula-with-marble-ids.tsv', 'TSV', '{macula_column_name_string}');
+        FROM file('macula/macula.tsv', 'TSV', '{macula_column_name_string}');
         """
         print('Inserting data from TSV file')
         client.execute(insert_data_query)

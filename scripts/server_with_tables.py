@@ -4,6 +4,7 @@ import os
 from flask_httpauth import HTTPTokenAuth
 from dotenv import load_dotenv
 from flask_cors import CORS
+from macula_data import macula_column_name_string, macula_column_names
 
 load_dotenv()
 
@@ -33,57 +34,6 @@ valid_extensions = ['.jsonl', '.json', '.tsv', '.csv', '.txt']
 sandbox_path = '/root/user_files/' if os.path.exists('/root/user_files/') else '../user_files/' # FIXME: path should be set using some kind of env value or something.
 available_files = list(list_files(sandbox_path, valid_extensions))
 print('available_files', available_files)
-macula_column_name_string = '''`xmlid` Nullable(String), `ref` Nullable(String), `class` Nullable(String), `text` Nullable(String), `transliteration` Nullable(String), `after` Nullable(String), `strongnumberx` Nullable(String), `stronglemma` Nullable(String), `sensenumber` Nullable(String), `greek` Nullable(String), `greekstrong` Nullable(String), `gloss` Nullable(String), `english` Nullable(String), `mandarin` Nullable(String), `stem` Nullable(String), `morph` Nullable(String), `lang` Nullable(String), `lemma` Nullable(String), `pos` Nullable(String), `person` Nullable(String), `gender` Nullable(String), `number` Nullable(String), `state` Nullable(String), `type` Nullable(String), `lexdomain` Nullable(String), `contextualdomain` Nullable(String), `coredomain` Nullable(String), `sdbh` Nullable(String), `extends` Nullable(String), `frame` Nullable(String), `subjref` Nullable(String), `participantref` Nullable(String), `role` Nullable(String), `normalized` Nullable(String), `strong` Nullable(String), `case` Nullable(String), `tense` Nullable(String), `voice` Nullable(String), `mood` Nullable(String), `degree` Nullable(String), `domain` Nullable(String), `ln` Nullable(String), `referent` Nullable(String), `vref` Nullable(String), `VREF` String, `TEXT` Nullable(String), `marble_ids` Nullable(String)'''
-
-macula_column_names = [
-            "xmlid",
-            "ref",
-            "class",
-            "text",
-            "transliteration",
-            "after",
-            "strongnumberx",
-            "stronglemma",
-            "sensenumber",
-            "greek",
-            "greekstrong",
-            "gloss",
-            "english",
-            "mandarin",
-            "stem",
-            "morph",
-            "lang",
-            "lemma",
-            "pos",
-            "person",
-            "gender",
-            "number",
-            "state",
-            "type",
-            "lexdomain",
-            "contextualdomain",
-            "coredomain",
-            "sdbh",
-            "extends",
-            "frame",
-            "subjref",
-            "participantref",
-            "role",
-            "normalized",
-            "strong",
-            "case",
-            "tense",
-            "voice",
-            "mood",
-            "degree",
-            "domain",
-            "ln",
-            "referent",
-            "vref",
-            "VREF",
-            "TEXT",
-            "marble_ids"
-        ]
 
 @app.route('/query', methods=['GET'])
 @auth.login_required

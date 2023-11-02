@@ -114,7 +114,9 @@ Install Flask, clickhouse-driver, and gunicorn:
 
 `source api_venv/bin/activate`
 
-`pip install Flask clickhouse-driver gunicorn python-dotenv flask_httpauth`
+`pip install Flask clickhouse-driver gunicorn python-dotenv flask_httpauth flask_cors`
+
+`python3 init_server.py`
 
 `gunicorn -w 1 -b 0.0.0.0:5001 server_with_tables:app` -- Note the port number, and adjust your queries according to whatever port you use.
 
