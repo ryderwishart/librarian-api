@@ -8,7 +8,10 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["https://text-librarian.vercel.app/"])
+if os.environ.get('FLASK_ENV') == 'development':
+    CORS(app, origins=["http://localhost:3000", "https://text-librarian.vercel.app/", "https://www.getpostman.com/"])
+else:
+    CORS(app, origins=["https://text-librarian.vercel.app/"])
 auth = HTTPTokenAuth(scheme='Bearer')
 client = Client('localhost')
 SECRET_KEY = os.environ.get('SECRET_AUTH_KEY')

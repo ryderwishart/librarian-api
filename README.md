@@ -116,7 +116,8 @@ Install Flask, clickhouse-driver, and gunicorn:
 
 `pip install Flask clickhouse-driver gunicorn python-dotenv flask_httpauth`
 
-`gunicorn -w 4 -b 0.0.0.0:5000 server_with_tables:app`
+`gunicorn -w 1 -b 0.0.0.0:5001 server_with_tables:app` -- Note the port number, and adjust your queries according to whatever port you use.
+
 
 If you are having trouble finding the virtual env for gunicorn (or another library), try specifying the full path. E.g.,
 
@@ -124,17 +125,16 @@ If you are having trouble finding the virtual env for gunicorn (or another libra
 
 Using postman, test the API endpoint by querying:
 
-`http://{DROPLET_IP_ADDRESS}:5000/query`
+`http://localhost:5001/resolveIds?ids=o010040010011`
 
 ```json
-{
-    "file": "macula/macula-with-marble-ids.tsv"
-}
+[
+    {
+        "maculaId": "o010040010011",
+        "marbleId": "00100400100002"
+    }
+]
 ```
-
-Examples:
-`http://{DROPLET_IP_ADDRESS}:5000/query?file=macula/macula-with-marble-ids.tsv&search_string=ROM 1:9&column_name=VREF&limit=3`
-`http://{DROPLET_IP_ADDRESS}:5000/alignments?vref=ROM 5:6&limit=5`
 
 ## Ports
 
