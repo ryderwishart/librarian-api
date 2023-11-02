@@ -27,7 +27,7 @@ def sanitize_input(input_string):
     return input_string.replace("'", "''")
 
 valid_extensions = ['.jsonl', '.json', '.tsv', '.csv', '.txt']
-sandbox_path = '/root/user_files/' if os.path.exists('/root/user_files/') else '../../user_files/'
+sandbox_path = '/root/user_files/' if os.path.exists('/root/user_files/') else '../user_files/' # FIXME: path should be set using some kind of env value or something.
 available_files = list(list_files(sandbox_path, valid_extensions))
 print('available_files', available_files)
 macula_column_name_string = '''`xmlid` Nullable(String), `ref` Nullable(String), `class` Nullable(String), `text` Nullable(String), `transliteration` Nullable(String), `after` Nullable(String), `strongnumberx` Nullable(String), `stronglemma` Nullable(String), `sensenumber` Nullable(String), `greek` Nullable(String), `greekstrong` Nullable(String), `gloss` Nullable(String), `english` Nullable(String), `mandarin` Nullable(String), `stem` Nullable(String), `morph` Nullable(String), `lang` Nullable(String), `lemma` Nullable(String), `pos` Nullable(String), `person` Nullable(String), `gender` Nullable(String), `number` Nullable(String), `state` Nullable(String), `type` Nullable(String), `lexdomain` Nullable(String), `contextualdomain` Nullable(String), `coredomain` Nullable(String), `sdbh` Nullable(String), `extends` Nullable(String), `frame` Nullable(String), `subjref` Nullable(String), `participantref` Nullable(String), `role` Nullable(String), `normalized` Nullable(String), `strong` Nullable(String), `case` Nullable(String), `tense` Nullable(String), `voice` Nullable(String), `mood` Nullable(String), `degree` Nullable(String), `domain` Nullable(String), `ln` Nullable(String), `referent` Nullable(String), `vref` Nullable(String), `VREF` String, `TEXT` Nullable(String), `marble_ids` Nullable(String)'''
@@ -238,31 +238,24 @@ def query_hottp():
 @auth.login_required
 def resolve_ids():
     # e.g., http://75.155.154.94:8080/resolveIds?ids=o010010010011,o010010010031
-    macula_ids = request.args.get('maculaIds', '').split(',')
-    marble_ids = request.args.get('marbleIds', '').split(',')
+    ids = request.args.get('ids', '').split(',')
     
-    print('querying macula_ids', macula_ids)
-    print('querying marble_ids', marble_ids)
+    print('querying macula_ids', ids)
     
     # if any of the macula ids begin with a letter prefix, remove the prefix and store it in a dict for later so we can add it back to the response
-    prefix_dict = {}
-    for i, id in enumerate(macula_ids):
-        if id and id[0].isalpha():
-            prefix_dict[id[1:]] = id
-            macula_ids[i] = id[1:]
+
     
-    if not macula_ids and not marble_ids:
-        return jsonify({'error': 'Please provide URL params `maculaIds` and/or `marbleIds` (both formatted as comma-separated lists, e.g., `maculaIds=o010010010011,o010010010031`)'})
+    # if not macula_ids and not marble_ids:
+    #     return jsonify({'error': 'Please provide URL params `maculaIds` and/or `marbleIds` (both formatted as comma-separated lists, e.g., `maculaIds=o010010010011,o010010010031`)'})
 
     result = []
-    seen_ids = set()
     
-    for id in macula_ids:
+    for id in ids:
         # Prepare the query
         table_name = 'marble_macula_mappings'
         query = f"""
         SELECT * FROM {table_name}
-        WHERE maculaId = '{id}'
+        WHERE maculaId = '{id}' OR marbleId = '{id}'
         """
         # Execute the query
         rows = client.execute(query)
@@ -272,31 +265,8 @@ def resolve_ids():
             pass
         
         for row in rows:
-            if row[0] not in seen_ids:
-                if row[0] in prefix_dict:
-                    result.append({'maculaId': prefix_dict[row[0]], 'marbleId': row[1]})
-                else:
-                    result.append({'maculaId': row[0], 'marbleId': row[1]})
-                seen_ids.add(row[0])
-    
-    for id in marble_ids:
-        # Prepare the query
-        table_name = 'marble_macula_mappings'
-        query = f"""
-        SELECT * FROM {table_name}
-        WHERE marbleId = '{id}'
-        """
-        # Execute the query
-        rows = client.execute(query)
-        
-         # Check if rows is empty
-        if not rows:
-            pass
-        
-        for row in rows:
-            if row[0] not in seen_ids:
-                result.append({'maculaId': row[0], 'marbleId': row[1]})
-                seen_ids.add(row[0])
+            result.append({'maculaId': row[0], 'marbleId': row[1]})
+
     
     # Return the rows
     return jsonify(result)

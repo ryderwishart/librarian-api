@@ -13,7 +13,7 @@ pkill -f gunicorn
 
 echo -e "\e[32mStarting ClickHouse server...\e[0m"
 # Start ClickHouse server in the background, redirecting output to /dev/null
-cd ../..
+cd ..
 nohup ./clickhouse server >/dev/null 2>&1 &
 
 # Wait for ClickHouse server to start
@@ -21,7 +21,7 @@ echo -e "\e[32mWaiting for ClickHouse server to start...\e[0m"
 while ! curl --output /dev/null --silent --head --fail http://localhost:8123; do sleep 1 && echo -n .; done
 echo -e "\e[32mClickHouse server started.\e[0m"
 
-cd librarian-api/scripts/
+cd scripts
 
 # Run init_server.py to create the database and tables
 echo -e "\e[32mCreating database and tables...\e[0m"

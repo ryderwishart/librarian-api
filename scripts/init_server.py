@@ -13,8 +13,8 @@ def list_files(directory, extensions):
 def sanitize_input(input_string):
     return input_string.replace("'", "''")
 
-valid_extensions = ['.jsonl', '.json', '.tsv', '.csv', '.txt']
-sandbox_path = '/root/user_files/' if os.path.exists('/root/user_files/') else '../../user_files/'
+valid_extensions = ['.jsonl', '.json', '.tsv', '.csv', '.txt'] # FIXME: deduplicate from server_with_tables.py
+sandbox_path = '/root/user_files/' if os.path.exists('/root/user_files/') else '../user_files/'
 available_files = list(list_files(sandbox_path, valid_extensions))
 print('available_files', available_files)
 macula_column_name_string = '''`xmlid` Nullable(String), `ref` Nullable(String), `class` Nullable(String), `text` Nullable(String), `transliteration` Nullable(String), `after` Nullable(String), `strongnumberx` Nullable(String), `stronglemma` Nullable(String), `sensenumber` Nullable(String), `greek` Nullable(String), `greekstrong` Nullable(String), `gloss` Nullable(String), `english` Nullable(String), `mandarin` Nullable(String), `stem` Nullable(String), `morph` Nullable(String), `lang` Nullable(String), `lemma` Nullable(String), `pos` Nullable(String), `person` Nullable(String), `gender` Nullable(String), `number` Nullable(String), `state` Nullable(String), `type` Nullable(String), `lexdomain` Nullable(String), `contextualdomain` Nullable(String), `coredomain` Nullable(String), `sdbh` Nullable(String), `extends` Nullable(String), `frame` Nullable(String), `subjref` Nullable(String), `participantref` Nullable(String), `role` Nullable(String), `normalized` Nullable(String), `strong` Nullable(String), `case` Nullable(String), `tense` Nullable(String), `voice` Nullable(String), `mood` Nullable(String), `degree` Nullable(String), `domain` Nullable(String), `ln` Nullable(String), `referent` Nullable(String), `vref` Nullable(String), `VREF` String, `TEXT` Nullable(String), `marble_ids` Nullable(String)'''

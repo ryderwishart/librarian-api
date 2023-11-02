@@ -10,3 +10,4 @@ lancedb
 store
 metadata_dropped
 data/default
+/scripts/api_venv
