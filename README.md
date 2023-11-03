@@ -42,7 +42,7 @@ Extract VREF from alignment files, and make it the first field in a new tsv file
 Let's also format the alignment files by turning escaped double quotes into single quotes (otherwise clickhouse will escape all the other double quotes, and then parsing the JSON there will be no distinction between content quotes and JSON syntax quotes):
 
 ```bash
-find user_files -name '*.jsonl' -print0 | xargs -0 -I{} sed -i.bak -e 's/{"vref": "\([^"]*\)".*/\1\t&/' -e 's/\\"/'\''/g' {}
+find user_files -name '*.jsonl' -print0 | xargs -0 -I{} sed -i.bak -e 's/{"vref": "\([^"]*\)".*/\1\t&/' -e 's/\\\?"/'\''/g' {}
 ```
 
 
