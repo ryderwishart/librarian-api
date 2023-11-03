@@ -75,7 +75,7 @@ We're just turning out json data into TSV by extracting a primary key and making
 ```bash
 cd user_files/hottp
 # The transform script should be right in the HOTTP folder
-python3 make_tsv_from_hottp_json.py
+python3 make_tsv_from_hottp_json.py # FIXME-BEN: run this to test
 cd ../..
 ```
 

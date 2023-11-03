@@ -17,10 +17,9 @@ def process_json_file(json_file):
         entry_json = json.dumps(entry, ensure_ascii=False)
         ref_value = refs if isinstance(refs, list) else [refs]
 
-        # replace tab and newline characters
-        # ref_value = ref_value.replace('\t', '\\t').replace('\n', '\\n')
-        # entry_json = entry_json.replace('\t', '\\t').replace('\n', '\\n')
-
+        # FIXME-BEN: lookup in librarian-api/data/mappings/marble-macula-id-mappings.csv
+        # Replace the ref_value with an array of matching Macula IDs
+        
         with open(output_file, 'a') as f:
             f.write(f'{ref_value}\t{entry_json}\n')
 
