@@ -12,7 +12,7 @@ app = Flask(__name__)
 if os.environ.get('FLASK_ENV') == 'development':
     CORS(app, origins=["http://localhost:3000", "https://text-librarian.vercel.app/", "https://www.getpostman.com/"])
 else:
-    CORS(app, origins=["https://text-librarian.vercel.app/"])
+    CORS(app, origins=["https://text-librarian.vercel.app/", "https://*.ryderwishart.vercel.app/"])
 auth = HTTPTokenAuth(scheme='Bearer')
 client = Client('localhost')
 SECRET_KEY = os.environ.get('SECRET_AUTH_KEY')
@@ -163,19 +163,20 @@ def query_passage():
 @app.route('/hottp', methods=['GET'])
 @auth.login_required
 def query_hottp():
-    marbleRef = request.args.get('marbleRef', '') # NOTE: can be a partial or complete marbleRef. The beginning of the ID must be complete. The end can be truncated.
+    maculaId = request.args.get('maculaId', '') # NOTE: can be a partial or complete maculaId. The beginning of the ID must be complete. The end can be truncated.
     # limit = request.args.get('limit', 5)
     translation = request.args.get('translation', 'spa_Latn')
+    print('INCOMING REQUEST:', request.args)
     try:
         # Prepare the query
         table_name = f'hottp_{translation}'
         query = f"SELECT * FROM {table_name}"
 
-        # Add a WHERE clause if a marbleRef
-        if not marbleRef:
-            return jsonify({'error': 'Please provide a marbleRef arg (i.e., a UBS Marble project ID)'})
+        # Add a WHERE clause if a maculaId
+        if not maculaId:
+            return jsonify({'error': 'Please provide a maculaId arg (i.e., a UBS Marble project ID)'})
     
-        query += f" WHERE arrayExists(x -> x LIKE '{marbleRef}%', refArray)"
+        query += f" WHERE arrayExists(x -> x LIKE '{maculaId}%', refArray)"
 
         # Add a LIMIT clause to limit the results
         # query += f" LIMIT {limit}"
