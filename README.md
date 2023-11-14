@@ -142,9 +142,10 @@ Using postman, test the API endpoint by querying:
 
 If your private IP works, but your public ip doesn't, you might need to run `sudo ufw allow 5000/tcp` to allow traffic.
 
-## To prepare everything for Clickhouse in one block, run this:
+## To prepare everything for Clickhouse in one block, run this from librarian-api root:
 
 ```bash
+rm -rf user_files/*
 cp -r ./data/* user_files/
 cd user_files
 find . '*.zip' -exec sh -c 'unzip -o -d "$(dirname "$1")" "$1"' _ {} \;
@@ -154,17 +155,11 @@ find user_files -name '*.jsonl' -print0 | xargs -0 -I{} sed -i.bak -e 's/{"vref"
 find user_files -name '*.jsonl' -print0 | xargs -0 -I{} sed -i.bak -e 's/"alignments"/"alignment"/g' {}
 find user_files -name "*.bak" -type f -delete
 cd user_files/hottp
-# The transform script should be right in the HOTTP folder
-python3 make_tsv_from_hottp_json.py # FIXME-BEN: run this to test
+python3 make_tsv_from_hottp_json.py 
 cd ../..
-# Navigate to scripts folder
 cd scripts
-# Create virtual env
 python3 -m venv api_venv
-# Activate virtual env
 source api_venv/bin/activate
-# Install dependencies
 pip install -r requirements.txt
-# Run the server
 ./run_server.sh 
 ```

@@ -174,7 +174,7 @@ def query_hottp():
 
         # Add a WHERE clause if a maculaId
         if not maculaId:
-            return jsonify({'error': 'Please provide a maculaId arg (i.e., a UBS Marble project ID)'})
+            return jsonify({'error': 'Please provide a maculaId arg (i.e., a macula id )'})
     
         query += f" WHERE arrayExists(x -> x LIKE '{maculaId}%', refArray)"
 

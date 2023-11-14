@@ -20,7 +20,7 @@ available_files = list(list_files(sandbox_path, valid_extensions))
 print('available_files', available_files)
 
 def initialize_clickhouse():
-    sleep(5) # wait for clickhouse to start
+    sleep(10) # wait for clickhouse to start
     all_jsonl_files = [f for f in available_files if f.endswith('.jsonl')]
     translations = [f.split('/')[1] for f in all_jsonl_files]
     
